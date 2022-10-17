@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/*
+           Kontrat           <----                  Kontrata yapılan çağrı
+           -------                                      -------------
+    Kontrat depolama alanı           Fonksiyon için ayrılan hafıza ve çağrıdaki data alanı
+    memory:          Geçici hafıza
+    storage:         Kalıcı hafıza
+    calldata:        Çağrıdaki argümanlar
+    bytes, string, array, struct
+    * Değer tipleri (uint, int, bool, bytes32) kontrat üzerinde storage, 
+      fonksiyon içinde memory'dir
+    
+    * mapping'ler her zaman kontrat üzerinde tanımlanır ve storage'dadır.
+*/
+/*
+Etheriuma eklediğimiz contratlar blokzincirde tutulur ve bu blokzincir kalıcı hafıza görevi görür.
+Fakat bir fonksiyona yaplıan çağrı ve bu fonksyion içerisinde oluşturulan değişkenler memory'deki geçici hafıza bölgesinde yer alır.
+Fonksiyon çağrılması bittiği anda bu memory'deki değerler yok edilir.
+Fonksiyona çağrı yaptığımızda verdiğimiz argümanların tutulduğu "calldata" denilen üçüncü bir hafıza alanı daha vardır.
+*/
+
+contract DataLoc {
+    uint256 myVal; //storage üzerinde tutar
+    
+    function myVal2(uint256 value) external{}  // memory de tutar
+
+    /*Not: Mapping'ler her zaman Contract üzerindedir, fonksiyon içerisinde tanımlanmaya çalışılırsa hata alınır
+            Tek istisna Library'deki fonksiyonlarda geçerlidir.
+            Lİbrary'de mapping parametre olarak verilebilir    
+    */
+    mapping(address => uint256) balances; //storage de tutulur
+
+    
+    //Eğer CALLDATA kullanılırsa ReadOnly'dir, değiştirilemez,
+    //Eğer MEMORY ise değiştirilebilir
+    function myFn (string calldata paramString) external pure {
+        paramString=";"
+    }
+    function myFn (string memory paramString) external pure {
+        paramString=";"
+    }
+}
+
+/* ÖZETLE;
+CallData => Fonksiyon içerisinde verilen değerleri doğrudan okumak istiyorsak
+Memory => Fonksiyon içerisinde değişiklik yapılmayacaksa,sadece okuma yapılacaksa
+Storage => Eğer değişim yapılacaksa kullanılmalı..
+
+Gas tasarrufu için :
+Ucuzdan pahalıya => Calldata -> Memory -> Storage
+*/
+
+
+
+
+// Kaynak kod : https://www.youtube.com/watch?v=MzvzBp9l3y0&list=PLby2HXktGwN4Cof_6a8YwlMrboX8-hs73&index=13
